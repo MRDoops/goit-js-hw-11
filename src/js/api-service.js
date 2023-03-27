@@ -2,54 +2,37 @@ import axios from 'axios';
 
 export default class NewsApiService {
   constructor() {
-    this.searchQuery = '';
-    this.page = 1;
-    this.PER_PAGE = 40;
+    this.API_KEY = '34747120-e4fca1e88a6c5e357c0eab0b1';
     this.BASE_URL = 'https://pixabay.com/api/';
+    this.query = '';
+    this.page = 1;
+    this.perPage = 40;
+    this.totalHits = 0;
   }
+
   async fetchGallery() {
-    const axiosOptions = {
-      method: 'get',
-      url: this.BASE_URL,
-      params: {
-        key: '34747120-e4fca1e88a6c5e357c0eab0b1',
-        q: `${this.searchQuery}`,
-        image_type: 'photo',
-        orientation: 'horizontal',
-        safesearch: true,
-        page: `${this.page}`,
-        per_page: `${this.PER_PAGE}`,
-      },
-    };
+    const url = `${this.BASE_URL}?key=${this.API_KEY}&q=${this.query}&page=${this.page}&per_page=${this.perPage}`;
+
     try {
-      const response = await axios(axiosOptions);
-
-      const data = response.data;
-
-      this.incrementPage();
+      const { data } = await axios.get(url);
       return data;
     } catch (error) {
-      console.error(error);
+      throw new Error(error.response?.data?.message || 'Failed to fetch data');
     }
   }
 
-  incrementPage() {
-    this.page += 1;
+  async fetchTotalHits() {
+    const url = `${this.BASE_URL}?key=${this.API_KEY}&q=${this.query}&per_page=1`;
+
+    try {
+      const { data } = await axios.get(url);
+      return data.totalHits;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Failed to fetch data');
+    }
   }
 
   resetPage() {
     this.page = 1;
-  }
-
-  resetEndOfHits() {
-    this.endOfHits = false;
-  }
-
-  get query() {
-    return this.searchQuery;
-  }
-
-  set query(newQuery) {
-    this.searchQuery = newQuery;
   }
 }
