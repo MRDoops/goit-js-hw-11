@@ -34,6 +34,7 @@ async function onSearch(e) {
   await fetchGallery();
   const { totalHits, hits } = newsApiService;
   Notify.success(`Hooray! We found ${totalHits} images !!!`);
+  console.log(newsApiService);
   onRenderGallery(hits);
 }
 
